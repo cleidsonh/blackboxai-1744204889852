@@ -32,4 +32,25 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
+// Broadcast message endpoint
+router.post('/broadcast', async (req, res) => {
+  try {
+    const { leadIds, message } = req.body;
+    
+    if (!leadIds || !message) {
+      return res.status(400).json({ error: 'Missing leadIds or message' });
+    }
+
+    if (!Array.isArray(leadIds)) {
+      return res.status(400).json({ error: 'leadIds must be an array' });
+    }
+
+    await facebookService.broadcastMessage(leadIds, message);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Error sending broadcast:', error);
+    res.status(500).json({ error: 'Failed to send broadcast messages' });
+  }
+});
+
 module.exports = router;
